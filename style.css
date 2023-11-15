@@ -19,7 +19,7 @@ body {
 /* --- --- --- HEADER --- --- --- */
 
 .header{
-    background-color: #BB84BA;
+    background-color: var(--coral);
     display: flex;
     justify-content: center;
     align-items: center;

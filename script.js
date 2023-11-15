@@ -20,7 +20,6 @@ function createGameboard() {
         console.log(boardWithCellValues);
     };
 
-    // need to return the method for adding X or Y
     return { getBoard, printBoard };
 }
 
@@ -58,6 +57,7 @@ function GameController(
     ];
 
     let activePlayer = players[0];
+    let gameOver = false;
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -71,29 +71,32 @@ function GameController(
     };
 
     const playRound = (row, column) => {
+        if (!gameOver) {
+            const selectedCell = gameboard.getBoard()[row][column];
+            if (selectedCell.getValue() === 0) {
+                selectedCell.addSign(getActivePlayer().sign);
 
-        const selectedCell = gameboard.getBoard()[row][column];
-        if (selectedCell.getValue() === 0) {
-            selectedCell.addSign(getActivePlayer().sign);
+                const winner = checkForWinner();
+                if (winner) {
+                    console.log(`${winner.name} wins!`);
+                    gameOver = true;
+                    return;
+                }
 
-            const winner = checkForWinner();
-            if (winner) {
-                console.log(`${winner.name} wins!`);
-                return;
+                if (isBoardFull()) {
+                    console.log("It's a tie!");
+                    gameOver = true;
+                    return;
+                }
+
+                switchPlayerTurn();
+                printNewRound();
+            } else {
+                console.log("This cell is already occupied");
             }
-
-            if (isBoardFull()) {
-                console.log("It's a tie!");
-                return;
-            }
-
-            switchPlayerTurn();
-            printNewRound();
         } else {
-            console.log("This cell is already occupied");
+            console.log("The game is already over");
         }
-
-
     };
 
     const isBoardFull = () => {
@@ -123,7 +126,7 @@ function GameController(
             (board[0][0].getValue() !== 0 && board[0][0].getValue() === board[1][1].getValue() && board[0][0].getValue() === board[2][2].getValue()) ||
             (board[0][2].getValue() !== 0 && board[0][2].getValue() === board[1][1].getValue() && board[0][2].getValue() === board[2][0].getValue())
         ) {
-            return getActivePlayer(); // Return the winning player object
+            return getActivePlayer();
         }
 
         return null;
@@ -134,7 +137,8 @@ function GameController(
     return {
         playRound,
         getActivePlayer,
-        getBoard
+        getBoard,
+        checkForWinner
     }
 }
 
@@ -160,8 +164,14 @@ const displayController = (() => {
     });
 
     const updateUI = () => {
-        const activePlayer = game.getActivePlayer();
-        message.textContent = `${activePlayer.name}'s turn`;
+
+        const winner = game.checkForWinner();
+        if(winner){
+            message.textContent = `${winner.name} wins!`;
+        } else {
+            const activePlayer = game.getActivePlayer();
+            message.textContent = `${activePlayer.name}'s turn`;
+        }
 
         const board = game.getBoard().getBoard();
         cells.forEach((cell, index) => {
@@ -171,16 +181,16 @@ const displayController = (() => {
 
             cell.textContent = cellValue === 1 ? "❌" : cellValue === 2 ? "⭕" : "";
             // Remove existing classes
-        cell.classList.remove("cell-x", "cell-o", "cell-empty");
+            cell.classList.remove("cell-x", "cell-o", "cell-empty");
 
-        // Add class based on the cell value
-        if (cellValue === 1) {
-            cell.classList.add("cell-x");
-        } else if (cellValue === 2) {
-            cell.classList.add("cell-o");
-        } else {
-            cell.classList.add("cell-empty");
-        }
+            // Add class based on the cell value
+            if (cellValue === 1) {
+                cell.classList.add("cell-x");
+            } else if (cellValue === 2) {
+                cell.classList.add("cell-o");
+            } else {
+                cell.classList.add("cell-empty");
+            }
         });
     };
 })();
