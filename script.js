@@ -104,12 +104,13 @@ function GameController(
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (board[i][j].getValue() === 0) {
-                    return false;
+                    return false; 
                 }
             }
         }
         return true;
     };
+    
 
 
     const checkForWinner = () => {
@@ -138,7 +139,8 @@ function GameController(
         playRound,
         getActivePlayer,
         getBoard,
-        checkForWinner
+        checkForWinner, 
+        isBoardFull
     }
 }
 
@@ -168,7 +170,10 @@ const displayController = (() => {
         const winner = game.checkForWinner();
         if(winner){
             message.textContent = `${winner.name} wins!`;
-        } else {
+        } else if(game.isBoardFull()){
+            message.textContent = "It's a tie!";
+        }
+        else {
             const activePlayer = game.getActivePlayer();
             message.textContent = `${activePlayer.name}'s turn`;
         }
