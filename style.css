@@ -52,8 +52,14 @@ body {
 }
 
 .cell{
+    width: calc(350px / 3);
+    height: calc(350px / 3);
     border: 2px solid var(--linen);
     background-color: var(--coral);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3em; 
 }
 
 .cell:hover{
